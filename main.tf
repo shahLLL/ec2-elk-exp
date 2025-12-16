@@ -153,7 +153,7 @@ resource "aws_instance" "elk_server" {
   associate_public_ip_address = true
 
   # Inject the ELK server setup script
-  user_data = file("scripts/elk_server_setup.sh")
+  user_data = file("scripts/install_elk.sh")
 
   tags = {
     Name = "ELK_Server"
@@ -169,10 +169,8 @@ resource "aws_instance" "elk_client" {
   vpc_security_group_ids = [aws_security_group.client_sg.id]
   associate_public_ip_address = true
 
-  # Inject the client setup script. We pass the ELK server's private IP dynamically.
-  user_data = templatefile("scripts/client_beats_setup.sh.tpl", {
-    elk_server_private_ip = aws_instance.elk_server.private_ip
-  })
+  # Inject the client setup script.
+  user_data = file("scripts/install_filebeats.sh")
 
   tags = {
     Name = "ELK_Client"
